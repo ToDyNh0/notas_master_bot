@@ -1,49 +1,49 @@
-# Usage Guide
+# Guia de Uso
 
-This guide explains how to properly configure and use the NF Reader Telegram Bot.
+Este guia explica como configurar e usar corretamente o Bot do Telegram NF Reader.
 
-## 1. Environment Configuration
+## 1. Configuração do Ambiente
 
-The bot uses an environment file to manage secrets without hardcoding them into the source code.
-1. Copy the `.env.example` file to create a `.env` file.
-2. Provide your bot token (from BotFather) in the `BOT_TOKEN` variable.
-3. Provide your Telegram User ID in the `ADMIN-AUTH-TOKEN` variable. This user will be granted full admin permissions.
+O bot utiliza um arquivo de ambiente para gerenciar informações confidenciais (secrets) sem colocá-las diretamente no código-fonte.
+1. Copie o arquivo `.env.example` para criar um arquivo `.env`.
+2. Insira o token do seu bot (fornecido pelo BotFather) na variável `BOT_TOKEN`.
+3. Insira o seu ID de Usuário do Telegram na variável `ADMIN-AUTH-TOKEN`. Este usuário receberá permissões totais de administrador.
 
-## 2. Dependencies
+## 2. Dependências
 
-To install project dependencies, use the following bash command:
+Para instalar as dependências do projeto, use o seguinte comando no bash:
 ```bash
 pip install -r dependences.txt
 ```
 
-## 3. Running the Bot
+## 3. Iniciando o Bot
 
-Run the bot script:
+Execute o script do bot:
 ```bash
 python bot.py
 ```
-Upon initialization, the bot will automatically generate all necessary output directories (e.g., `output/pdf`, `output/json`, `output/db`) and begin listening for incoming messages.
+Ao ser iniciado, o bot irá gerar automaticamente todos os diretórios de saída necessários (por exemplo, `output/pdf`, `output/json`, `output/db`) e começará a ouvir as mensagens recebidas.
 
-## 4. User Roles and Commands
+## 4. Cargos de Usuários e Comandos
 
-The application defines three basic roles: Admin, Moderator, User.
+O aplicativo define três cargos básicos: Administrador, Moderador e Usuário.
 
-**Admin commands:**
-- `/addrole`: Grant specific roles to other users.
-- `/removerole`: Revoke roles from users.
-- `/logs`: View recent bot activity logs.
-- `/users`: View activity by user.
-- All Moderator commands.
+**Comandos de Administrador:**
+- `/addrole`: Conceder cargos específicos para outros usuários.
+- `/removerole`: Revogar cargos de usuários.
+- `/logs`: Ver os registros (logs) de atividades recentes do bot.
+- `/users`: Ver a atividade por usuário.
+- Todos os comandos de Moderador.
 
-**Moderator commands:**
-- `/resume [dia|semana|quinzena|mes]`: Request visual reports. (Rate limited to 1 report per type per hour).
-- `/nf`: Send NF links or QR codes for parsing. (Rate limited to 1 note per 50 seconds).
-- All User commands.
+**Comandos de Moderador:**
+- `/resume [dia|semana|quinzena|mes]`: Solicitar relatórios visuais. (Limitado a 1 relatório por tipo por hora).
+- `/nf`: Enviar links de NF ou códigos QR para processamento. (Limitado a 1 nota a cada 50 segundos).
+- Todos os comandos de Usuário.
 
-**User commands:**
-- `/myid`: Find out your exact Telegram ID to request admin permission.
-- `/help`: View basic help instructions.
+**Comandos de Usuário:**
+- `/myid`: Descobrir o seu ID exato do Telegram para solicitar permissão de administrador.
+- `/help`: Ver instruções básicas de ajuda.
 
-## 5. Submitting Invoices
+## 5. Enviando Notas Fiscais
 
-Once authorized as a Moderator or Admin, you can simply forward the NFC-e URL or send a photo of the QR code to the bot (use the caption `/nf`). The bot will scrape the NF data from the appropriate SEFAZ portal, respond with an infographic receipt, and securely log the products to the local CSV database.
+Assim que for autorizado como Moderador ou Administrador, você pode simplesmente encaminhar a URL da NFC-e ou enviar uma foto do QR code para o bot (use a legenda `/nf`). O bot extrairá os dados da NF do portal apropriado da SEFAZ, responderá com um recibo em infográfico e salvará os produtos de forma segura no banco de dados local em formato CSV.
