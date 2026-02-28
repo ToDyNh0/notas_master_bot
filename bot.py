@@ -74,6 +74,13 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
+# Subdirectories for outputs
+(OUTPUT_DIR / "pdf").mkdir(exist_ok=True)
+(OUTPUT_DIR / "json").mkdir(exist_ok=True)
+(OUTPUT_DIR / "png").mkdir(exist_ok=True)
+(OUTPUT_DIR / "txt").mkdir(exist_ok=True)
+(OUTPUT_DIR / "db").mkdir(exist_ok=True)
+
 OUTPUT_QR  = Path("NF_QR_CODE")
 OUTPUT_QR.mkdir(exist_ok=True)
 
@@ -82,9 +89,9 @@ LOGO_PATH  = (Path("profile_banenr")
 
 ROLES_FILE    = Path("roles.json")
 ACTIVITY_FILE = Path("activity.json")
-CSV_SCANS     = Path("output") / "scans.csv"
-CSV_PRODUTOS  = Path("output") / "produtos.csv"
-CSV_LOJAS     = Path("output") / "lojas.csv"
+CSV_SCANS     = OUTPUT_DIR / "db" / "scans.csv"
+CSV_PRODUTOS  = OUTPUT_DIR / "db" / "produtos.csv"
+CSV_LOJAS     = OUTPUT_DIR / "db" / "lojas.csv"
 
 
 # ──────────────────────────────────────────────
@@ -2320,7 +2327,7 @@ async def resume_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             role_counts[r] = role_counts.get(r, 0) + 1
             total_msgs += entry.get("message_count", 0)
 
-        nf_files = list(OUTPUT_DIR.glob("nf_*.json"))
+        nf_files = list((OUTPUT_DIR / "json").glob("nf_*.json"))
         nf_count = len(nf_files)
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
@@ -2508,8 +2515,8 @@ async def resume_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     # Generate PDF and save + send
     ts_now      = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    resume_base = OUTPUT_DIR / f"resume_{user.id}_{ts_now}"
-    resume_base.with_suffix(".txt").write_text(text, encoding="utf-8")
+    resume_base = OUTPUT_DIR / "txt" / f"resume_{user.id}_{ts_now}.txt"
+    resume_base.write_text(text, encoding="utf-8")
     try:
         pdf_bytes = await asyncio.to_thread(
             _build_resume_pdf,
@@ -2522,8 +2529,10 @@ async def resume_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             filename=pdf_fname,
             caption=f"📄 [PDF] {periodo_label} — {len(scans)} NF{'s' if len(scans)!=1 else ''}",
         )
-        resume_base.with_suffix(".pdf").write_bytes(pdf_bytes)
-        logger.info("Resume PDF saved: %s", resume_base)
+        
+        pdf_path = OUTPUT_DIR / "pdf" / pdf_fname
+        pdf_path.write_bytes(pdf_bytes)
+        logger.info("Resume PDF saved: %s", pdf_path)
     except Exception as exc:
         logger.warning("Resume PDF failed: %s", exc)
         # Fallback to infographic image
@@ -2750,9 +2759,13 @@ async def nf_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     # ── Save output files (PNG + JSON) ────────────────────────────────────
     # Save QR crop only to the dedicated NF_QR_CODE folder (not duplicated in output/)
+    png_fname = OUTPUT_DIR / "png" / f"qr_{scan_id or ts_tag}_{ts_tag}.png"
     qr_fname = OUTPUT_QR / f"qr_{scan_id or ts_tag}_{ts_tag}.png"
     qr_fname.write_bytes(cropped_png)
-    base_name.with_suffix(".json").write_text(
+    png_fname.write_bytes(cropped_png)
+    
+    json_path = OUTPUT_DIR / "json" / f"nf_{scan_id or ts_tag}_{ts_tag}.json"
+    json_path.write_text(
         json.dumps({
             "timestamp":      ts_tag,
             "scan_at":        scan_at,
@@ -2799,7 +2812,7 @@ async def nf_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             caption=f"📄 [PDF] Nota Fiscal — Scan #{scan_id}",
         )
         # Also save PDF to output folder
-        (OUTPUT_DIR / fname).write_bytes(pdf_bytes)
+        (OUTPUT_DIR / "pdf" / fname).write_bytes(pdf_bytes)
     except Exception as exc:
         logger.warning("NF PDF generation failed: %s", exc)
         # Fallback to infographic image if PDF fails
