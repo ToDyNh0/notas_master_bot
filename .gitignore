@@ -10,8 +10,21 @@ venv/
 
 # Project specific ignores
 nf/
-output/
-NF_QR_CODE/
+
+# Ignore contents of output but keep folders
+output/*
+!output/pdf/
+!output/json/
+!output/png/
+!output/txt/
+!output/db/
+!output/.gitkeep
+output/*/*
+!output/*/.gitkeep
+
+# Ignore contents of NF_QR_CODE but keep folder
+NF_QR_CODE/*
+!NF_QR_CODE/.gitkeep
 activity.json
 roles.json
 scans.csv
