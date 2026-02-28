@@ -1,0 +1,9 @@
+matplotlib
+requests
+beautifulsoup4
+opencv-python
+numpy
+pyzbar
+reportlab
+python-dotenv
+python-telegram-bot==20.0
